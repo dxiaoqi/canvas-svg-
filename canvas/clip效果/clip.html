@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
+	<title>clip</title>
+	<style type="text/css">
+		html,body{
+			width: 100%;
+			height: 100%;
+			margin:0;
+			padding:0;
+		}
+		.view{
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		.box{
+			position: absolute;
+			left:0;
+			top:0;
+			width: 100%;
+			height: 100%;
+			background:#000 url("pic1.jpg") no-repeat center center;
+			background-size: auto 100%;
+			backface-visibility: hidden;
+			overflow: hidden;
+		}
+
+	</style>
+</head>
+<body>
+<div class="view">
+	<div class="box" id="bb">
+		<canvas id="can" ></canvas>
+	</div>
+</div>
+
+<script charset="utf-8">
+	var canvas = document.getElementById("can"), ctx = canvas.getContext("2d");
+	var cir;
+	const img=new Image();
+	img.src='pic2.jpg';
+	img.onload=function(){
+	canvas.addEventListener('click',function(e){
+		var x= e.x-canvas.getBoundingClientRect().left;
+		var y= e.y-canvas.getBoundingClientRect().top;
+		cir= new Circle(x,y,200,img);
+		cir.render(ctx);
+		requestAnimFrame(scal);
+	})
+	}
+
+	canvas.width = 800;
+	canvas.height = 600;
+
+ function background(){
+ 	var img = new Image();
+ 	img.src = "pic1.jpg";
+ 	img.onload = function () {
+ 		var w = canvas.height*img.width/img.height;
+ 		ctx.drawImage(img, (canvas.width-w)/2, 0, w, canvas.height);
+ 	}
+ }
+
+	function Circle(x,y,r,msk=new Image()) {
+		this.x=x;
+		this.y=y;
+		this.r=r;
+		this.ctx={};
+		this.msk=msk;
+	}
+	Circle.prototype.render = function(cxt) {
+		this.ctx=ctx;
+		ctx.save();
+		ctx.beginPath();
+		ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+		ctx.closePath();
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+		ctx.clip();
+		ctx.drawImage(this.msk,0,0);
+		ctx.restore();
+		
+	};
+	Circle.prototype.big = function() {
+		this.r++;
+		this.render(this.ctx);
+	};
+	Circle.prototype.small = function() {
+		if(this.r>0){
+			this.r--;
+		}else{
+
+		}
+		this.render(this.ctx);
+		
+	};
+
+
+function scal(argument) {
+	cir.big();
+	requestAnimFrame(scal);
+}
+
+
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
+</script>
+</body>
+</html>
