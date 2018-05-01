@@ -4,3 +4,4 @@
 1. [clip效果 仿qq空间广告效果](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/clip%E6%95%88%E6%9E%9C)
 2. [粒子效果](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/%E7%B2%92%E5%AD%90)
 3. [vector2](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/Vector)
+4. [vue3d](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/vue%2B3d%E4%BA%A4%E4%BA%92)
