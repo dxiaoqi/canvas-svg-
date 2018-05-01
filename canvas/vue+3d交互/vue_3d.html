@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<style type="text/css">
+	*{
+		margin: 0px;
+		padding: 0px;
+	}
+	body{
+		background-color: #009999;
+	}
+	.container{
+		position: relative;
+		top: 100px;
+	}
+	#login{
+		position: relative;
+		margin: auto;
+		width: 200px;
+		height: 200px;
+		background-color: #00CCFF;
+		border-radius: 100px;
+		overflow: hidden;;
+	}
+</style>
+<body id="body">
+	<div id="bod">
+	<div id="login">
+		<canvas id="can" width="200px" height="200px"></canvas>
+	</div>
+
+
+	<div class="container">
+	  <form>
+	    <div class="form-group">
+	      <input type="text" class="form-control" id="usr" placeholder="用户名" v-model="username" >
+	    </div>
+	    <div class="form-group">
+	    	<p>{{roate}}</p>
+	      <input type="password" class="form-control" id="pwd" placeholder="密码" v-text="username">
+	    
+	    </div>
+	  </form>
+	</div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="Vector3.js"></script>
+<script type="text/javascript">
+
+	var vm=new Vue({
+		el:'#bod',
+		data:{
+			username:"",
+			left:0,
+			len:0,
+			pos:0,
+			dir:'left'
+		},
+		computed:{
+			roate:function (argument) {
+				this.len=this.username.length;
+			}
+		},
+		watch:{
+			len:function(o,n){
+				this.pos=1;
+				if(n<o){
+					this.dir='right';
+				}else {
+					this.dir='left'
+				}
+			}
+		}
+	})
+
+	var can=document.getElementById('can');
+	var input=document.getElementById('usr');
+	var left=input.getBoundingClientRect().left;
+	var roate=0;
+	var ctx=can.getContext('2d');
+	var face=new shape({
+		paths:[[new Vector3(-50,0,4),new Vector3(-50,-70,4),new Vector3(50,-70,4),new Vector3(50,0,4)]],
+		color:"#3366C"
+	})
+	var eyes=new shape({
+		paths:[[new Vector3(-54,0,6),new Vector3(-54,-8,6),new Vector3(-46,-4,6),new Vector3(-46,0,6)],
+		[new Vector3(-54,0,6),new Vector3(-54,8,6),new Vector3(-46,4,6),new Vector3(-46,0,6)]],
+		color:"white"
+	})
+	face.render(ctx);
+	eyes.render(ctx);
+	var r=5*0.005;
+	eyes.rotate(0.0005,0);
+	function anima(){
+		if(vm.pos===1){
+			if(vm.left<r){
+				ctx.clearRect(0,0,200,200);
+				switch (vm.dir) {
+					case 'right':
+						face.rotate(0,r);
+						eyes.rotate(0,r);
+						face.render(ctx);
+						eyes.render(ctx);
+						vm.left+=r/5;
+						break;
+					case 'left':
+						face.rotate(0,-r);
+						eyes.rotate(0,-r);
+						face.render(ctx);
+						eyes.render(ctx);
+						vm.left+=r/5;
+						break;
+				}
+			}else{
+				vm.left=0;
+				vm.pos=0;
+			}
+		}
+		requestAnimationFrame(anima)
+	}
+	anima();
+	// function anima(angle){
+	// 	var ang=0;
+	// 	while (ang<angle) {
+	// 		ctx.cleaRect(0,0,200,200);
+	// 		eyes.roate(0.01);
+	// 		eyes.render(ctx);
+	// 	}
+	// }
+	// anima();
+	// console.log(face)
+	// face.render(ctx)
+	// eyes.render(ctx);
+</script>
