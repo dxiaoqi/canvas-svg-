@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<style>
+	    body{
+	    	padding:0;
+	    	margin:0;
+	    	overflow: hidden;
+	    }
+		#can{
+			display: block;
+			background-color:rgba(0,0,0,0);
+			margin:auto;
+			border:1px solid;
+		}
+	</style>
+	<title>缓存</title>
+</head>
+<body>
+	<div >
+		<canvas id='can' width="800px" height="600px">浏览器不支持canvas</canvas>
+	</div>
+	<script>
+
+			var canvas = document.getElementById("can"),
+				ctx = canvas.getContext('2d'),
+				BALLS=[];
+			function ball(x , y , vx , vy , cache){
+				this.x = x;
+				this.y = y;
+				this.vx = vx;
+				this.vy = vy;
+				this.r = 5;
+				this.cacheCanvas = document.createElement("canvas");
+				this.cacheCtx = this.cacheCanvas.getContext("2d");
+				this.color=`rgba(${random(0,255)},${random(0,255)},${random(0,255)},1)`;
+				this.cacheCanvas.width = 2*this.r;
+				this.cacheCanvas.height = 2*this.r;
+				this.cache = cache;
+			}
+
+			function random(a , b){
+				return getzheng(Math.random()*(b-a)+a);
+			}
+			function getzheng(num){
+				var rand;
+				rand = (0.5 + num) | 0;
+				rand = ~~ (0.5 + num);
+				rand = (0.5 + num) << 0;
+				return rand;
+			}
+			ball.prototype = {
+				paint:function(ctx){
+					if(!this.cache){
+							ctx.save();
+							ctx.beginPath();
+							ctx.fillStyle=this.color;
+							ctx.arc(this.x , this.y ,this.r , 0 , 2*Math.PI);
+							ctx.fill();
+							ctx.restore();
+					} else{
+
+							this.cacheCtx.save();
+							this.cacheCtx.beginPath();
+							this.cacheCtx.fillStyle=this.color;
+							this.cacheCtx.arc(this.x , this.y , this.r, 0 , 2*Math.PI);
+							this.cacheCtx.fill();
+							this.cacheCtx.restore();
+						ctx.drawImage(this.cacheCanvas , this.x-this.r , this.y-this.r);
+					}
+				},
+
+
+				updata:function(ctx){
+					this.x += this.vx;
+					this.y += this.vy;
+					if(this.x>(canvas.width-this.r)||this.x<this.r){
+						this.x=this.x<this.r?this.r:(canvas.width-this.r);
+						this.vx = -this.vx;
+					}
+					if(this.y>(canvas.height-this.r)||this.y<this.r){
+						this.y=this.y<this.r?this.r:(canvas.height-this.r);
+						this.vy = -this.vy;
+					}
+
+					this.paint(ctx);
+				}
+			}
+
+
+		window.requestAnimationFrame = (function(){
+			return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {window.setTimeout(callback, 1000 / 60); };
+		})();
+
+		window.onload = function(){
+			var bal =new ball(5,5,1,1,true);
+			for(let i=0; i<=10;i++){
+				BALLS.push(new ball(5,5,random(1,i),random(1,i),false));
+			};
+			run();
+		}
+		function run(){
+			ctx.clearRect(0,0,canvas.width,canvas.height);
+			for(let i=0;i<BALLS.length;i++){
+				BALLS[i].updata(ctx);
+			}
+			requestAnimationFrame(run);
+		}
+	</script>
+</body>
+</html>
