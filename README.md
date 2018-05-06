@@ -5,3 +5,4 @@
 2. [粒子效果](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/%E7%B2%92%E5%AD%90)
 3. [vector2](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/Vector)
 4. [vue3d](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/vue%2B3d%E4%BA%A4%E4%BA%92)
+5. [canvas缓存测试](https://github.com/dxiaoqi/canvas-svg-/tree/master/canvas/cache%E7%BC%93%E5%AD%98)
