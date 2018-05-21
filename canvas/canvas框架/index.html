@@ -1,0 +1,67 @@
+<<!DOCTYPE html>
+<html>
+<head>
+	<title>Title</title>
+</head>
+<body>
+
+<div id="container">
+	<canvas id="ID">Your Browser does not support Canvas, please upgrade</canvas>
+</div>
+<script type="text/javascript" src="status.js"></script>
+<script type="text/javascript" src="vec2.js"></script>
+<script type="text/javascript" src="vec3.js"></script>
+<script type="text/javascript" src="Sprite.js"></script>
+<script type="text/javascript" src="dll.js"></script>
+<script>
+(function(){
+
+var canvas = document.getElementById('ID');
+var ctx = canvas.getContext('2d');
+
+canvas.width = 1000;
+canvas.height = 1000;
+
+		var d={
+		name:"apple1",
+		path:function(){
+			this.x=20;
+			this.v=2;
+		},
+		draw:function(){
+			this.ctx.fillStyle="red";
+			this.ctx.fillRect(this.x,0,200,200);
+			this.ctx.fill();
+		},
+		active:function(){
+			this.x+=this.v;
+		}
+	}
+
+	var a=new drawTree({
+		name:"apple2",
+		ctx:ctx,
+		path:function(){
+			//定义与绘制
+			this.x=10;
+			this.x=10;
+			this.y=10;
+			this.ctx.fillStyle="yellow";
+		},
+		draw:function(){
+			this.ctx.fillRect(this.x,this.y,200,200);
+			this.ctx.fill();			
+		},
+		child:[d],//子对象
+		active:function(){//事件动画处理
+			this.x+=1;
+			//console.log(this.x)
+		}
+	})
+	var gg=util.getEle("ui");//捕获节点
+	//a.todo();				//绘制
+
+}());
+</script>
+</body>
+</html>
