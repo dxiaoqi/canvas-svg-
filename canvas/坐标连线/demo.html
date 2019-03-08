@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    #can{
+        background-color: lightskyblue;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="can">can not show</canvas>
+    <button onclick="pause()">暂停</button>
+    <button onclick="play()">播放</button>  
+    <button onclick="reset()">重置</button>      
+</body>
+</html>
+<script>
+//线条颜色 运动状态
+const fillStyle = '#22202e';
+const PEDDING = 'PEDDING';
+const MOVEING = 'MOVING';
+const RESETING ='RESETING';
+//坐标顺序
+const site = [[0,0],[20,20],[100,30],[60,120],[200,200]];
+//向量支持
+var Vector = function(x = 0,y = 0) {
+    this.x = x;
+    this.y = y;
+}
+Vector.prototype={
+    add:function(v){
+        return new Vector(this.x+v.x,this.y+v.y);
+    },
+    subtract:function(v){
+        return new Vector(v.x-this.x,v.y-this.y);
+    },
+    length:function(){
+        return Math.sqrt(this.x*this.x+this.y*this.y);
+    },
+    divide:function(n){
+        return new Vector(this.x/n,this.y/n);
+    },
+    unit:function(){
+        return this.divide(this.length());
+    },
+    lerp:function(v){
+        let dirV = this.subtract(v);
+        let unit = dirV.unit();
+        return this.add(unit);
+
+    }
+}
+//小球类
+var ball = function(x = 0,y = 0 ){
+    this.x = x;
+    this.y = y;
+    this.status = MOVEING;
+
+}
+ball.prototype.render = function(context){
+    let self = this;
+    context.save();
+    context.fillStyle = fillStyle;
+    context.rect(self.x, self.y,5,5);
+    context.fill();
+    context.restore();
+}
+ball.prototype.lerp = function(site){
+    //插值计算，不断更新坐标
+    let self = this;
+    let dirV = new Vector(...site);
+    self.site = new Vector(this.x,this.y);
+    let n_site = self.site.lerp(dirV);
+    self.x = n_site.x;
+    self.y = n_site.y;
+}
+
+
+var can = document.querySelector('#can');
+can.width = window.innerWidth;
+can.height = window.innerHeight-50;
+var context = can.getContext('2d');
+
+var a = new ball(...site[0]);
+var index =0;
+
+//主逻辑部分
+function run(){
+    let x = site[index+1][0];
+    let y = site[index+1][1];
+    console.log(index)
+    if(a.x>=x-1&&a.y>=y-1){
+        index=index+1;
+    }
+    if(site[index+1]){
+        move(site[index+1]);
+        requestAnimationFrame(run)
+    }
+    if(a.status==RESETING){
+        context.clearRect(0, 0,2000,1000);
+    }
+}
+(function(){
+    site.length>=2?requestAnimationFrame(run):' ';
+})()
+
+
+//尝试修复canvas clearRect未清除的问题
+context.clearRect=function(x,y,w,h){
+    context.save();
+    context.fillStyle='lightskyblue';
+    context.fillRect(x,y,w,h);
+    context.fill();
+    context.restore();
+    
+}
+//小球状态处理
+function move(pos){
+    context.clearRect(0, 0, can.width, can.height);
+    a.render(context);
+    switch (a.status) {
+        case 'PEDDING':
+            
+            break;
+        case 'MOVING':
+            a.lerp(pos);
+            break;
+        // case 'RESETING':
+        //     //小球RESETING状态，有BUG，可有可无
+        //     a = null;
+        //     context.clearRect(0, 0, can.width, can.height);
+        //     a = new ball(...site[0]);
+        //     index=0;
+        //     //a.status = MOVEING;          
+        //     break;
+        default:
+            break;
+    }
+}
+//重置 暂停 运行
+function reset(){  
+    location.reload();
+    //a.status = RESETING;
+}
+function pause(){
+    a.status = PEDDING;
+}
+function play(){
+    a.status = MOVEING;
+}
+//requestAnimationFrame
+if(!window.requestAnimationFrame){
+    var lastTime = 0;
+    window.requestAnimationFrame = function(callback){
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0,16.7-(currTime - lastTime));
+        var id  = window.setTimeout(function(){
+            callback(currTime + timeToCall);
+        },timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    }
+}
+if (!window.cancelAnimationFrame) {
+    window.cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+    };
+}
+
+
+</script>
